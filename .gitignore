@@ -1,6 +1,8 @@
+/.conda
+/.vscode
+/.venv
+venv
 data
-.conda
 weights
 config.yml
-venv
 *.pyc
