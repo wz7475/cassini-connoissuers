@@ -41,10 +41,13 @@ def load_local():
     )
 
 
-def get_rgb_images(ds):
+def get_images(ds):
+    # returns years, images, ndvis
     years = ds["year"].values.tolist()
     images = []
+    ndvis = []
     for i in range(len(years)):
         image = np.stack([ds["band_1"][i], ds["band_2"][i], ds["band_3"][i]], 0)
         images.append(np.transpose(image / image.max(), (1, 2, 0)))
-    return years, images
+        ndvis.append(ds["band_4"][i])
+    return years, images, ndvis
