@@ -45,6 +45,7 @@ def add_time_dim(xda):
 
 
 def load_local():
+    print(TIFF_PATHS)
     return xr.open_mfdataset(
         TIFF_PATHS,
         engine="rasterio",
