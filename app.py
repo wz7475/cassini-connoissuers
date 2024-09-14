@@ -4,12 +4,12 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 import pandas as pd
-from data_retrieval.loader import load_local, get_rgb_images
+from data_retrieval.loader import load_local, get_images
 
 
 def get_images(lat, lon):
     ds = load_local()
-    years, images = get_rgb_images(ds)
+    years, images, ndvis = get_images(ds)
     return images[0], images[1]
 
 
