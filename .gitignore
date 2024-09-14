@@ -1,3 +1,5 @@
 /.conda
 /.vscode
 /.venv
+venv
+venv/
