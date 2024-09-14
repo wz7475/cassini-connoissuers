@@ -1,3 +1,5 @@
-.conda
-.vscode
-data
+/.conda
+/.vscode
+/.venv
+venv
+venv/
