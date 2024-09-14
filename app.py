@@ -4,7 +4,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 from data_retrieval.loader import load_local_images
-from utils import color_grayscale_img
+from imgutils import color_grayscale_img
 
 @st.cache_data
 def get_images(lat, lon, show_ndvi):
