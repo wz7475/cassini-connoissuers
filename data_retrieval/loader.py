@@ -22,7 +22,7 @@ from sentinelhub import (
 )
 import xarray as xr
 
-TIFF_PATHS = Path("./data").glob("*.tif")
+TIFF_PATHS = Path("./data_retrieval/data").glob("*.tif")
 
 
 def add_time_dim(xda):
@@ -41,7 +41,7 @@ def load_local():
     )
 
 
-def get_rgb_image(ds):
+def get_rgb_images(ds):
     years = ds["year"].values.tolist()
     images = []
     for i in range(len(years)):
