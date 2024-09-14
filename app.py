@@ -7,7 +7,7 @@ import pandas as pd
 from data_retrieval.loader import load_local, get_images
 
 
-def get_images(lat, lon):
+def get_images_xd(lat, lon):
     ds = load_local()
     years, images, ndvis = get_images(ds)
     return images[0], images[1]
@@ -15,14 +15,14 @@ def get_images(lat, lon):
 
 def show_images_comparison(data, show_ndvi=False):
     lat, lon = data["coords"]
-    img1, img2 = get_images(lat, lon)
+    img1, img2 = get_images_xd(lat, lon)
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("Title 1")
-        st.image(img1, caption="Image 1", use_column_width=True)
+        st.image(img1, caption="Image 1", use_column_width=True, clamp=True)
     with col2:
         st.subheader("Title 2")
-        st.image(img2, caption="Image 2", use_column_width=True)
+        st.image(img2, caption="Image 2", use_column_width=True, clamp=True)
     
     area_data = pd.DataFrame(np.random.randn(20, 1), columns=["Forest Area"])
     st.area_chart(area_data)

@@ -3,6 +3,7 @@ from pathlib import Path
 import getpass
 from datetime import datetime
 from pathlib import Path
+import yaml
 
 import requests
 import matplotlib.colors as mcolors
@@ -24,6 +25,17 @@ import xarray as xr
 
 TIFF_PATHS = Path("./data_retrieval/data").glob("*.tif")
 
+def download():
+    config_data = yaml.safe_load(open("config.yml"))
+    config = SHConfig()
+    config.sh_client_id = config_data.sh_client_id
+    config.sh_client_secret = config_data.sh_client_secret
+    config.sh_token_url = config_data.sh_token_url
+    config.sh_base_url = config_data.sh_base_url
+
+    # TODO
+    pass
+
 
 def add_time_dim(xda):
     # This pre-processes the file to add the correct
@@ -33,6 +45,7 @@ def add_time_dim(xda):
 
 
 def load_local():
+    print(TIFF_PATHS)
     return xr.open_mfdataset(
         TIFF_PATHS,
         engine="rasterio",
