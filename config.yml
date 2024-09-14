@@ -1,4 +1,0 @@
-sh_client_id: "TODO"
-sh_client_secret: "TODO"
-sh_token_url: "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token"
-sh_base_url: "https://sh.dataspace.copernicus.eu"
