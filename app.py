@@ -5,19 +5,34 @@ import numpy as np
 import pandas as pd
 from data_retrieval.loader import load_local_images
 from imgutils import color_grayscale_img
+from img_processing import close_mask_clusters
+from model import DetecTree
+import cv2
+import torch
+from torchvision.utils import draw_segmentation_masks
 
 @st.cache_data
-def get_images(lat, lon, show_ndvi):
+def get_images(lat, lon, show_ndvi, show_mask):
     years, images, ndvis = load_local_images()
     print(images[0])
     if show_ndvi:
         return color_grayscale_img(ndvis[0]), color_grayscale_img(ndvis[1])
+    elif show_mask:
+        masked_1 = overlap_mask(images[0])
+        masked_2 = overlap_mask(images[1])
+        return masked_1, masked_2
     else:
         return images[0], images[1]
 
+def overlap_mask(image):
+    mask = close_mask_clusters(DetecTree().predict_img(image[:, :, :3]), 3, 5, 5)
+    image = torch.tensor(image).permute(2, 0, 1)
 
-def show_images_comparison(lat, lon, show_ndvi):
-    img1, img2 = get_images(lat, lon, show_ndvi)
+    return draw_segmentation_masks(image, torch.tensor(mask == 255), alpha=0.3, colors='red').permute(1, 2, 0).numpy()
+
+
+def show_images_comparison(lat, lon, show_ndvi, show_mask):
+    img1, img2 = get_images(lat, lon, show_ndvi, show_mask)
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("Title 1")
@@ -56,8 +71,9 @@ def main():
 
     if point is not None:
         show_ndvi = st.button("Show NDVI")
+        show_mask = st.button("Show mask")
         lat, lon = point
-        show_images_comparison(lat, lon, show_ndvi)
+        show_images_comparison(lat, lon, show_ndvi, show_mask)
 
 
 if __name__ == "__main__":
