@@ -12,12 +12,12 @@ import torch
 from torchvision.utils import draw_segmentation_masks
 
 @st.cache_data
-def get_images(lat, lon, show_ndvi, show_mask):
+def get_images(lat, lon, vis_type):
     years, images, ndvis = load_local_images()
     print(images[0])
-    if show_ndvi:
+    if vis_type == 'NDVI':
         return color_grayscale_img(ndvis[0]), color_grayscale_img(ndvis[1])
-    elif show_mask:
+    elif vis_type == 'Forest':
         masked_1 = overlap_mask(images[0])
         masked_2 = overlap_mask(images[1])
         return masked_1, masked_2
@@ -31,8 +31,8 @@ def overlap_mask(image):
     return draw_segmentation_masks(image, torch.tensor(mask == 255), alpha=0.3, colors='red').permute(1, 2, 0).numpy()
 
 
-def show_images_comparison(lat, lon, show_ndvi, show_mask):
-    img1, img2 = get_images(lat, lon, show_ndvi, show_mask)
+def show_images_comparison(lat, lon, vis_type):
+    img1, img2 = get_images(lat, lon, vis_type)
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("Title 1")
@@ -70,10 +70,13 @@ def main():
         point = (map["last_clicked"]["lat"], map["last_clicked"]["lng"])
 
     if point is not None:
-        show_ndvi = st.button("Show NDVI")
-        show_mask = st.button("Show mask")
+        vis_type = st.radio(
+            "Choose visualization",
+            ["Image", "NDVI", "Forest"],
+            index=0,
+        )
         lat, lon = point
-        show_images_comparison(lat, lon, show_ndvi, show_mask)
+        show_images_comparison(lat, lon, vis_type)
 
 
 if __name__ == "__main__":
