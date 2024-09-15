@@ -29,7 +29,7 @@ def get_request_config():
     return config
 
 
-def get_request(config, year, bbox_coords):
+def get_request(config, year, bbox_coords, key='1'):
     time_interval = (datetime(year, 6, 1), datetime(year, 9, 1))
     epsg = 3035
     bbox = BBox(bbox_coords, CRS(4326)).transform(epsg)
@@ -48,27 +48,28 @@ def get_request(config, year, bbox_coords):
         bbox=bbox,
         resolution=(10, 10),
         config=config,
-        data_folder="./data",
+        data_folder=f"./data/{key}",
     )
 
 
-def download(bbox_coords=None, year_start=2015, year_end=2024):
+def download(bbox_coords=None, year_start=2015, year_end=2024, key='1'):
     if bbox_coords is None:
         bbox_coords = [14.880833, 54.044444, 14.95, 54.068889]
     config = get_request_config()
 
     sh_requests = {}
     for year in range(year_start, year_end):
-        sh_requests[year] = get_request(config, year, bbox_coords)
+        sh_requests[year] = get_request(config, year, bbox_coords, key)
     list_of_requests = [request.download_list[0] for request in sh_requests.values()]
 
     data = SentinelHubDownloadClient(config=config).download(
         list_of_requests, max_threads=5
     )
 
+    Path(f"./data/{key}").mkdir(parents=True, exist_ok=True)
     for year, request in sh_requests.items():
         Path(request.data_folder, request.get_filename_list()[0]).rename(
-            f"./data/{year}.tif"
+            f"./data/{key}/{year}.tif"
         )
 
     return data
@@ -81,9 +82,9 @@ def add_time_dim(xda):
     return xda.expand_dims(year=[year])
 
 
-def load_local():
+def load_local(key='1'):
     return xr.open_mfdataset(
-        Path("./data_retrieval/data").glob("*.tif"),
+        Path(f"./data/{key}").glob("*.tif"),
         engine="rasterio",
         preprocess=add_time_dim,
         band_as_variable=True,

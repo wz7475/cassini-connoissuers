@@ -12,8 +12,12 @@ import torch
 from torchvision.utils import draw_segmentation_masks
 
 @st.cache_data
+def streamlit_cached_data():
+    return load_local_images()
+
+@st.cache_data
 def get_images(lat, lon, vis_type):
-    years, images, ndvis = load_local_images()
+    years, images, ndvis = streamlit_cached_data()
     print(images[0])
     if vis_type == 'NDVI':
         return color_grayscale_img(ndvis[0]), color_grayscale_img(ndvis[1])
@@ -23,6 +27,17 @@ def get_images(lat, lon, vis_type):
         return masked_1, masked_2
     else:
         return images[0], images[1]
+
+@st.cache_data
+def get_area_change(lat, lon):
+    years, images, ndvis = streamlit_cached_data()
+
+    return [
+        (close_mask_clusters(DetecTree().predict_img(images[year][:, :, :3]), 3, 5, 5) == 255).mean()
+        for year in range(len(images))
+    ]
+
+
 
 def overlap_mask(image):
     mask = close_mask_clusters(DetecTree().predict_img(image[:, :, :3]), 3, 5, 5)
@@ -41,7 +56,7 @@ def show_images_comparison(lat, lon, vis_type):
         st.subheader("Title 2")
         st.image(img2, caption="Image 2", use_column_width=True, clamp=True)
 
-    area_data = pd.DataFrame(np.random.randn(20, 1), columns=["Forest Area"])
+    area_data = pd.DataFrame(get_area_change(lat, lon), columns=["Forest Area"])
     st.area_chart(area_data)
 
     line_data = pd.DataFrame(np.random.randn(20, 2), columns=["Temperature", "CO2"])
