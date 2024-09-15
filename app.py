@@ -57,7 +57,8 @@ def show_images_comparison(lat, lon, vis_type):
         st.image(img2, caption="Image 2", use_column_width=True, clamp=True)
 
     area_data = pd.DataFrame(get_area_change(lat, lon), columns=["Forest Area"])
-    st.area_chart(area_data)
+    area_data['years'] = [str(i) for i in range(2015, 2024)]
+    st.area_chart(area_data, x='years')
 
     line_data = pd.DataFrame(np.random.randn(20, 2), columns=["Temperature", "CO2"])
     st.line_chart(line_data)
