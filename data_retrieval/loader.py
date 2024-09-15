@@ -21,6 +21,7 @@ def get_request_config():
     config_data = yaml.safe_load(open("config.yml"))
 
     config = SHConfig()
+
     config.sh_client_id = config_data["sh_client_id"]
     config.sh_client_secret = config_data["sh_client_secret"]
     config.sh_token_url = config_data["sh_token_url"]
